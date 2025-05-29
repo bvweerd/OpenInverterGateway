@@ -32,7 +32,8 @@ Firmware replacement for Growatt ShineWiFi-S (serial), ShineWiFi-X (USB) or cust
 > Growatt Protocol ([here is why](SRC/ShineWiFi-ModBus/Config.h.example#L16)).
 > You can start with it, but **you will likely need to compile OpenInverterGateway yourself**.
 
-1. Download a [precompiled release from the GitHub release page](https://github.com/OpenInverterGateway/OpenInverterGateway/releases/) matching your hardware.
+1. Download a [precompiled release from the GitHub release page](https://github.com/OpenInverterGateway/OpenInverterGateway/releases/)
+   matching your hardware.
 2. Follow the [flashing / hardware section below](#flashing--hardware).
 
 ### Compile a release yourself
