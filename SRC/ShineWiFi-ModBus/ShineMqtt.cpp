@@ -91,21 +91,30 @@ bool ShineMqtt::mqttReconnect() {
 
 boolean ShineMqtt::mqttPublish(const String& jsonString) {
   if (jsonString.length() >= BUFFER_SIZE) {
-    Log.println(F("MQTT message to long for buffer"));
-
+    Log.println(F("MQTT message too long for buffer"));
     return false;
   }
 
   Log.print(F("publish MQTT message... "));
   if (this->mqttclient.connected()) {
-    bool res = this->mqttclient.publish(this->mqttconfig.topic.c_str(),
-                                        jsonString.c_str(), true);
-    Log.println(res ? "succeed" : "failed");
 
-    return res;
+    int end = jsonString.lastIndexOf('}');
+    if (end > 0) {
+      String cleanJson = jsonString.substring(0, end + 1);
+      const uint8_t* payload = (const uint8_t*)cleanJson.c_str();
+      unsigned int length = cleanJson.length();
+
+      bool res = this->mqttclient.publish(this->mqttconfig.topic.c_str(),
+                                          payload, length, true);
+      Log.println(res ? "succeed" : "failed");
+      return res;
+    } else {
+      Log.println("JSON end not found!");
+      return false;
+    }
+
   } else {
     Log.println(F("not connected"));
-
     return false;
   }
 }
