@@ -130,6 +130,7 @@ boolean ShineMqtt::mqttPublish(JsonDocument& doc, String topic) {
     bool res =
         this->mqttclient.beginPublish(topic.c_str(), measureJson(doc), true);
     BufferingPrint bufferedClient(this->mqttclient, BUFFER_SIZE);
+    doc.setFloatPrecision(2);
     serializeJson(doc, this->mqttclient);
     bufferedClient.flush();
     this->mqttclient.endPublish();
