@@ -4,6 +4,7 @@
 #include <TLog.h>
 #include <StreamUtils.h>
 #include "PubSubClient.h"
+#include <ArduinoJson.h>
 
 ShineMqtt::ShineMqtt(WiFiClient& wc, Growatt& inverter)
     : wifiClient(wc), mqttclient(wifiClient), inverter(inverter) {}
@@ -130,7 +131,6 @@ boolean ShineMqtt::mqttPublish(JsonDocument& doc, String topic) {
     bool res =
         this->mqttclient.beginPublish(topic.c_str(), measureJson(doc), true);
     BufferingPrint bufferedClient(this->mqttclient, BUFFER_SIZE);
-    doc.setFloatPrecision(2);
     serializeJson(doc, this->mqttclient);
     bufferedClient.flush();
     this->mqttclient.endPublish();
@@ -146,8 +146,9 @@ boolean ShineMqtt::mqttPublish(JsonDocument& doc, String topic) {
 }
 
 void ShineMqtt::onMqttMessage(char* topic, byte* payload, unsigned int length) {
-  StaticJsonDocument<1024> req;
-  StaticJsonDocument<1024> res;
+  JsonDocument req;
+  JsonDocument res;
+  
   String strTopic(topic);
 
   Log.print(F("MQTT message arrived ["));

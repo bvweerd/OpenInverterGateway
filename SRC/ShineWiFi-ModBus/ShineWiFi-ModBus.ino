@@ -555,7 +555,7 @@ void sendJsonSite(void)
         return;
     }
 
-    DynamicJsonDocument doc(JSON_DOCUMENT_SIZE);
+    JsonDocument doc;
     Inverter.CreateJson(doc, WiFi.macAddress(), Config.hostname);
 
     sendJson(doc);
@@ -563,7 +563,7 @@ void sendJsonSite(void)
 
 void sendUiJsonSite(void)
 {
-    DynamicJsonDocument doc(JSON_DOCUMENT_SIZE);
+    JsonDocument doc;
     Inverter.CreateUIJson(doc, Config.hostname);
 
     sendJson(doc);
@@ -596,7 +596,7 @@ void sendMetrics(void)
 #if MQTT_SUPPORTED == 1
 boolean sendMqttJson(void)
 {
-    DynamicJsonDocument doc(JSON_DOCUMENT_SIZE);
+    JsonDocument doc;
 
     Inverter.CreateJson(doc, WiFi.macAddress(), "");
     return shineMqtt.mqttPublish(doc);
@@ -771,7 +771,7 @@ void handleNTPSync() {
         Log.print(F(" reachable "));
         Log.println(reachable & 1);
         if (reachable & 1) { // last SNTP request was successful
-            StaticJsonDocument<128> req, res;
+            JsonDocument req, res;
             char buff[32];
             struct tm tm;
             time_t t = time(NULL);
