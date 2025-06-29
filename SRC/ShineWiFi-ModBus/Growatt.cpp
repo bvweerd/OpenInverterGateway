@@ -525,7 +525,7 @@ void Growatt::CreateUIJson(JsonDocument& doc, const String& Hostname) {
   const int bdcModeStrLength = sizeof(bdcModeStr) / sizeof(char*);
 
   if (!Hostname.isEmpty()) {
-    JsonArray arr = doc.createNestedArray("Hostname");
+    JsonArray arr = doc["Hostname"].to<JsonArray>();
     arr.add(Hostname);
     arr.add("");
     arr.add(false);
@@ -534,8 +534,7 @@ void Growatt::CreateUIJson(JsonDocument& doc, const String& Hostname) {
   for (int i = 0; i < _Protocol.InputRegisterCount; i++) {
     if (_Protocol.InputRegisters[i].frontend == true ||
         _Protocol.InputRegisters[i].plot == true) {
-      JsonArray arr = doc.createNestedArray(_Protocol.InputRegisters[i].name);
-
+      JsonArray arr = doc[_Protocol.InputRegisters[i].name].to<JsonArray>();
       // value
       arr.add(getRegValue(&_Protocol.InputRegisters[i]));
 
@@ -559,7 +558,7 @@ void Growatt::CreateUIJson(JsonDocument& doc, const String& Hostname) {
   for (int i = 0; i < _Protocol.HoldingRegisterCount; i++) {
     if (_Protocol.HoldingRegisters[i].frontend == true ||
         _Protocol.HoldingRegisters[i].plot == true) {
-      JsonArray arr = doc.createNestedArray(_Protocol.HoldingRegisters[i].name);
+      JsonArray arr = doc[_Protocol.HoldingRegisters[i].name].to<JsonArray>();
 
       // value
       arr.add(getRegValue(&_Protocol.HoldingRegisters[i]));
@@ -576,51 +575,51 @@ void Growatt::CreateUIJson(JsonDocument& doc, const String& Hostname) {
   }
 #else
 #warning simulating the inverter
-  JsonArray arr = doc.createNestedArray("Status");
+  JsonArray arr = doc["Status"].to<JsonArray>();
   arr.add(1);
   arr.add("(Normal Operation)");
   arr.add(false);
-  arr = doc.createNestedArray("DcPower");
+  JsonArray arr = doc["DcPower"].to<JsonArray>();
   arr.add(230);
   arr.add("W");
   arr.add(true);
-  arr = doc.createNestedArray("DcVoltage");
+  JsonArray arr = doc["DcVoltage"].to<JsonArray>();
   arr.add(70.5);
   arr.add("V");
   arr.add(false);
-  arr = doc.createNestedArray("DcInputCurrent");
+  JsonArray arr = doc["DcInputCurrent"].to<JsonArray>();
   arr.add(8.5);
   arr.add("A");
   arr.add(false);
-  arr = doc.createNestedArray("AcFreq");
+  JsonArray arr = doc["AcFreq"].to<JsonArray>();
   arr.add(50);
   arr.add("Hz");
   arr.add(false);
-  arr = doc.createNestedArray("AcVoltage");
+  JsonArray arr = doc["AcVoltage"].to<JsonArray>();
   arr.add(230);
   arr.add("V");
   arr.add(false);
-  arr = doc.createNestedArray("AcPower");
+  JsonArray arr = doc["AcPower"].to<JsonArray>();
   arr.add(0.00);
   arr.add("W");
   arr.add(false);
-  arr = doc.createNestedArray("EnergyToday");
+  JsonArray arr = doc["EnergyToday"].to<JsonArray>();
   arr.add(0.3);
   arr.add("kWh");
   arr.add(false);
-  arr = doc.createNestedArray("EnergyTotal");
+  JsonArray arr = doc["EnergyTotal"].to<JsonArray>();
   arr.add(49.1);
   arr.add("kWh");
   arr.add(false);
-  arr = doc.createNestedArray("OperatingTime");
+  JsonArray arr = doc["OperatingTime"].to<JsonArray>();
   arr.add(123456);
   arr.add("s");
   arr.add(false);
-  arr = doc.createNestedArray("Temperature");
+   JsonArray arr = doc["Temperature"].to<JsonArray>();
   arr.add(21.12);
   arr.add("C");
   arr.add(false);
-  arr = doc.createNestedArray("AccumulatedEnergy");
+  JsonArray arr = doc["AccumulatedEnergy"].to<JsonArray>();
   arr.add(320);
   arr.add("kWh");
   arr.add(false);
@@ -735,7 +734,7 @@ void Growatt::HandleCommand(const String& command, const byte* payload,
     message =
         "Failed to parse JSON request: " + String(deserializationErr.c_str());
   } else {
-    if (req.containsKey("correlationId")) {
+    if (!req["correlationId"].isNull()) {
       res["correlationId"] = String(req["correlationId"].as<String>());
     }
 
@@ -758,7 +757,7 @@ void Growatt::HandleCommand(const String& command, const byte* payload,
 std::tuple<bool, String> Growatt::handleEcho(const JsonDocument& req,
                                              JsonDocument& res,
                                              Growatt& inverter) {
-  if (!req.containsKey("text")) {
+  if (!req["text"].isNull()) {
     return std::make_tuple(false, "'text' field is required");
   }
   String text = req["text"].as<String>();
@@ -769,7 +768,7 @@ std::tuple<bool, String> Growatt::handleEcho(const JsonDocument& req,
 std::tuple<bool, String> Growatt::handleCommandList(const JsonDocument& req,
                                                     JsonDocument& res,
                                                     Growatt& inverter) {
-  JsonArray commands = res.createNestedArray("commands");
+  JsonArray commands = res["commands"].to<JsonArray>();
   for (auto it = handlers.begin(); it != handlers.end(); ++it) {
     commands.add(it->first);
   }
@@ -779,7 +778,7 @@ std::tuple<bool, String> Growatt::handleCommandList(const JsonDocument& req,
 std::tuple<bool, String> Growatt::handleModbusGet(const JsonDocument& req,
                                                   JsonDocument& res,
                                                   Growatt& inverter) {
-  if (!req.containsKey("id")) {
+  if (!req["id"].isNull()) {
     return std::make_tuple(false, "'id' field is required");
   }
 
@@ -787,7 +786,7 @@ std::tuple<bool, String> Growatt::handleModbusGet(const JsonDocument& req,
   uint16_t id = req["id"].as<uint16_t>();
 #endif
 
-  if (!req.containsKey("type")) {
+  if (!req["type"].isNull()) {
     return std::make_tuple(false, "'type' field is required");
   }
 
@@ -797,7 +796,7 @@ std::tuple<bool, String> Growatt::handleModbusGet(const JsonDocument& req,
     return std::make_tuple(false, "'type' must be '16b' or '32b'");
   }
 
-  if (!req.containsKey("registerType")) {
+  if (!req["registerType"].isNull()) {
     return std::make_tuple(false, "'registerType' field is required");
   }
 
@@ -848,15 +847,14 @@ std::tuple<bool, String> Growatt::handleModbusGet(const JsonDocument& req,
 std::tuple<bool, String> Growatt::handleModbusSet(const JsonDocument& req,
                                                   JsonDocument& res,
                                                   Growatt& inverter) {
-  if (!req.containsKey("id")) {
+  if (!req["id"].isNull()) {
     return std::make_tuple(false, "'id' field is required");
   }
 
 #if SIMULATE_INVERTER != 1
   uint16_t id = req["id"].as<uint16_t>();
 #endif
-
-  if (!req.containsKey("type")) {
+  if (!req["id"].isNull()) {
     return std::make_tuple(false, "'type' field is required");
   }
 
@@ -871,7 +869,7 @@ std::tuple<bool, String> Growatt::handleModbusSet(const JsonDocument& req,
     return std::make_tuple(false, "'type' must be '16b'");
   }
 
-  if (!req.containsKey("registerType")) {
+  if (!req["registerType"].isNull()) {  
     return std::make_tuple(false, "'registerType' field is required");
   }
 
@@ -886,7 +884,7 @@ std::tuple<bool, String> Growatt::handleModbusSet(const JsonDocument& req,
     return std::make_tuple(false, "'registerType' must be 'H' (holding)");
   }
 
-  if (!req.containsKey("value")) {
+  if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
