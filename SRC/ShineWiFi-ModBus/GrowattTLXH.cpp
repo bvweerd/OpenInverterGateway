@@ -9,7 +9,7 @@
 std::tuple<bool, String> setBDCDischargePowerRate(const JsonDocument& req,
                                                   JsonDocument& res,
                                                   Growatt& inverter) {
-  if (!req.containsKey("value")) {
+  if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
@@ -31,7 +31,7 @@ std::tuple<bool, String> setBDCDischargePowerRate(const JsonDocument& req,
 std::tuple<bool, String> setBDCDischargeStopSOC(const JsonDocument& req,
                                                 JsonDocument& res,
                                                 Growatt& inverter) {
-  if (!req.containsKey("value")) {
+  if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
@@ -53,7 +53,7 @@ std::tuple<bool, String> setBDCDischargeStopSOC(const JsonDocument& req,
 std::tuple<bool, String> setBDCChargePowerRate(const JsonDocument& req,
                                                JsonDocument& res,
                                                Growatt& inverter) {
-  if (!req.containsKey("value")) {
+   if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
@@ -75,7 +75,7 @@ std::tuple<bool, String> setBDCChargePowerRate(const JsonDocument& req,
 std::tuple<bool, String> setBDCChargeStopSOC(const JsonDocument& req,
                                              JsonDocument& res,
                                              Growatt& inverter) {
-  if (!req.containsKey("value")) {
+   if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
@@ -97,7 +97,7 @@ std::tuple<bool, String> setBDCChargeStopSOC(const JsonDocument& req,
 std::tuple<bool, String> setBDCACChargeEnabled(const JsonDocument& req,
                                                JsonDocument& res,
                                                Growatt& inverter) {
-  if (!req.containsKey("value")) {
+   if (!req["value"].isNull()) {
     return std::make_tuple(false, "'value' field is required");
   }
 
@@ -113,7 +113,7 @@ std::tuple<bool, String> setBDCACChargeEnabled(const JsonDocument& req,
 
 std::tuple<bool, String> setPriority(const JsonDocument& req, JsonDocument& res,
                                      Growatt& inverter) {
-  if (!req.containsKey("mode")) {
+  if (!req["mode"].isNull()) {
     return std::make_tuple(false, "'mode' field is required");
   }
   uint16_t mode = req["mode"].as<uint16_t>();
