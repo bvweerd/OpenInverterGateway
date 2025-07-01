@@ -769,9 +769,10 @@ void handleNTPSync() {
         Log.print(F("NTP server: "));
         Log.print(DEFAULT_NTP_SERVER);
         Log.print(F(" reachable "));
-        Log.println(reachable & 1);
+        
         if (reachable & 1) { // last SNTP request was successful
-            StaticJsonDocument<128> req, res;
+            Log.println(reachable);
+			StaticJsonDocument<128> req, res;
             char buff[32];
             struct tm tm;
             time_t t = time(NULL);
