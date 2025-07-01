@@ -769,8 +769,9 @@ void handleNTPSync() {
         Log.print(F("NTP server: "));
         Log.print(DEFAULT_NTP_SERVER);
         Log.print(F(" reachable "));
-        Log.println(reachable & 1);
+        
         if (reachable & 1) { // last SNTP request was successful
+            Log.println(reachable);
             StaticJsonDocument<128> req, res;
             char buff[32];
             struct tm tm;
@@ -781,6 +782,9 @@ void handleNTPSync() {
             Log.println(buff);
             Inverter.HandleCommand("datetime/set", (byte*) &buff, strlen(buff), req, res);
             Log.println(res["message"].as<String>());
+        }
+        else {
+            Log.println(reachable);
         }
         lastNTPSync = now;
     }
