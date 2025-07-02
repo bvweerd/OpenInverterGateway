@@ -99,10 +99,15 @@ boolean ShineMqtt::mqttPublish(const String& jsonString) {
   Log.print(F("publish MQTT message... "));
   if (this->mqttclient.connected()) {
     String cleanJson = jsonString;
-    cleanJson.replace("\xC0", "");
+    // remove all SLIP-END-bytes (0xC0)
+    for (int i = cleanJson.length() - 1; i >= 0; --i) {
+      if ((uint8_t)cleanJson[i] == 0xC0) {
+        cleanJson.remove(i, 1);
+      }
+    }
     cleanJson.trim();  // Remove trailing control-characters
     bool res = this->mqttclient.publish(this->mqttconfig.topic.c_str(),
-                                        jsonString.c_str(), true);
+                                        cleanJson.c_str(), true);
     Log.println(res ? "succeed" : "failed");
 
     return res;

@@ -772,7 +772,7 @@ void handleNTPSync() {
         
         if (reachable & 1) { // last SNTP request was successful
             Log.println(reachable);
-			StaticJsonDocument<128> req, res;
+            StaticJsonDocument<128> req, res;
             char buff[32];
             struct tm tm;
             time_t t = time(NULL);
@@ -782,6 +782,9 @@ void handleNTPSync() {
             Log.println(buff);
             Inverter.HandleCommand("datetime/set", (byte*) &buff, strlen(buff), req, res);
             Log.println(res["message"].as<String>());
+        }
+        else {
+            Log.println(reachable);
         }
         lastNTPSync = now;
     }
