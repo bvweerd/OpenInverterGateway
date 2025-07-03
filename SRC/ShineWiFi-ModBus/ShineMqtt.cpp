@@ -121,15 +121,25 @@ boolean ShineMqtt::mqttPublish(const String& jsonString) {
 boolean ShineMqtt::mqttPublish(JsonDocument& doc, String topic) {
   Log.print(F("publish MQTT message... "));
 
+  String cleanJson;
+  serializeJson(doc, cleanJson);
+  // remove all SLIP-END-bytes (0xC0)
+  for (int i = cleanJson.length() - 1; i >= 0; --i) {
+    if ((uint8_t)cleanJson[i] == 0xC0) {
+      cleanJson.remove(i, 1);
+    }
+  }
+  cleanJson.trim();  // Remove trailing control-characters
+
   if (topic.isEmpty()) {
     topic = this->mqttconfig.topic;
   }
 
   if (this->mqttclient.connected()) {
     bool res =
-        this->mqttclient.beginPublish(topic.c_str(), measureJson(doc), true);
+        this->mqttclient.beginPublish(topic.c_str(), cleanJson.length(), true);
     BufferingPrint bufferedClient(this->mqttclient, BUFFER_SIZE);
-    serializeJson(doc, this->mqttclient);
+    this->mqttclient.print(cleanJson);
     bufferedClient.flush();
     this->mqttclient.endPublish();
 
